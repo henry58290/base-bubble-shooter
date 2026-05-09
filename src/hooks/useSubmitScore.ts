@@ -132,6 +132,7 @@ export function useSubmitScore(): UseSubmitScoreResult {
           abi: LEADERBOARD_ABI,
           functionName: 'submitScore',
           args: [BigInt(score)],
+          dataSuffix: "0x62635f366668783431636f0b0080218021802180218021802180218021"
         });
         // After the wallet signs we know the tx was broadcast.
         toast.loading('Submitting transaction…', { id: TOAST_ID });

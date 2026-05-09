@@ -137,6 +137,7 @@ export function useSubmitScore(): UseSubmitScoreResult {
         // After the wallet signs we know the tx was broadcast.
         toast.loading('Submitting transaction…', { id: TOAST_ID });
       } catch (err) {
+        console.error('Error submitting score:', err);
         toast.error(friendlyErrorMessage(err), { id: TOAST_ID });
       }
     },

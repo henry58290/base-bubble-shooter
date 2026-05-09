@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { Providers } from './providers';
 import './globals.css';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = {other: {"base:app_id": "69fece45de2c01f9557d2dd8"},
   title: 'Neon Pop Arcade — On-chain Bubble Shooter on Base',
   description:
     'A neon arcade bubble shooter with an on-chain leaderboard living on Base Mainnet.',

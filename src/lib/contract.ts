@@ -1,16 +1,31 @@
-import type { Address } from 'viem';
+import { type Address, getAddress } from 'viem';
 
 /**
  * Address of the deployed GameLeaderboard contract on Base Mainnet.
- * Set NEXT_PUBLIC_LEADERBOARD_ADDRESS in `.env.local` after deploying.
+ * Set NEXT_PUBLIC_LEADERBOARD_ADDRESS in `.env` after deploying.
  */
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000' as Address;
+
 // `||` so an empty-string env var (`NEXT_PUBLIC_LEADERBOARD_ADDRESS=`) also falls
 // through to the zero-address default; downstream code uses `isLeaderboardConfigured`.
-export const LEADERBOARD_ADDRESS = (process.env.NEXT_PUBLIC_LEADERBOARD_ADDRESS ||
-  '0x0000000000000000000000000000000000000000') as Address;
+const rawAddress = (process.env.NEXT_PUBLIC_LEADERBOARD_ADDRESS || ZERO_ADDRESS).trim();
 
-export const isLeaderboardConfigured =
-  LEADERBOARD_ADDRESS !== '0x0000000000000000000000000000000000000000';
+/**
+ * Normalize through viem's `getAddress` so any case (lower / upper / mixed) in
+ * the env file resolves to the canonical EIP-55 checksum. Without this,
+ * `writeContract` rejects the address before even sending the tx.
+ */
+function safeChecksum(input: string): Address {
+  try {
+    return getAddress(input);
+  } catch {
+    return ZERO_ADDRESS;
+  }
+}
+
+export const LEADERBOARD_ADDRESS: Address = safeChecksum(rawAddress);
+
+export const isLeaderboardConfigured = LEADERBOARD_ADDRESS !== ZERO_ADDRESS;
 
 /**
  * ABI for GameLeaderboard.sol — kept inline so the frontend has no build-time

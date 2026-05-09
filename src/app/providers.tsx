@@ -1,6 +1,6 @@
 'use client';
 
-import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
@@ -10,8 +10,6 @@ import { WagmiProvider } from 'wagmi';
 import { wagmiConfig } from '@/lib/wagmi';
 
 export function Providers({ children }: { children: ReactNode }) {
-  // QueryClient is intentionally constructed inside state so it survives
-  // React Strict Mode double-invocation but isn't shared across requests on the server.
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -28,10 +26,10 @@ export function Providers({ children }: { children: ReactNode }) {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
-          theme={darkTheme({
-            accentColor: '#00ff9d',
-            accentColorForeground: '#05070a',
-            borderRadius: 'medium',
+          theme={lightTheme({
+            accentColor: '#0ea5e9',
+            accentColorForeground: '#ffffff',
+            borderRadius: 'large',
             overlayBlur: 'small',
             fontStack: 'system',
           })}
@@ -42,12 +40,23 @@ export function Providers({ children }: { children: ReactNode }) {
             position="top-center"
             toastOptions={{
               style: {
-                background: '#0c1117',
-                color: '#00ff9d',
-                border: '1px solid rgba(0,255,157,0.35)',
-                fontFamily: 'ui-monospace, monospace',
-                fontSize: '12px',
-                letterSpacing: '0.05em',
+                background: 'rgba(255, 255, 255, 0.95)',
+                color: '#0c4a6e',
+                border: '1px solid rgba(186, 230, 253, 0.7)',
+                borderRadius: '14px',
+                boxShadow:
+                  '0 12px 32px -8px rgba(14, 165, 233, 0.25), 0 4px 12px -4px rgba(2, 132, 199, 0.18)',
+                fontFamily: 'var(--font-sans), Inter, system-ui, sans-serif',
+                fontSize: '13px',
+                fontWeight: 500,
+                padding: '12px 16px',
+                backdropFilter: 'blur(12px)',
+              },
+              success: {
+                iconTheme: { primary: '#0ea5e9', secondary: '#ffffff' },
+              },
+              error: {
+                iconTheme: { primary: '#fb7185', secondary: '#ffffff' },
               },
             }}
           />

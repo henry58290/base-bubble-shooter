@@ -3,12 +3,12 @@ export type Vec2 = { x: number; y: number };
 /** Index into COLORS — every bubble carries one of these. */
 export type ColorIndex = number;
 
-/** Neon palette. Five colors keeps matching tractable while preserving the cyberpunk vibe. */
+/** Premium pastel-pop palette. Five colors keep matching tractable. */
 export const COLORS: readonly string[] = [
-  '#00ff9d', // neon green
-  '#00e5ff', // neon cyan
-  '#ff2d95', // neon magenta
-  '#ffd166', // amber
+  '#fb7185', // pink
+  '#38bdf8', // sky blue
+  '#34d399', // mint
+  '#fbbf24', // gold
   '#a78bfa', // violet
 ];
 

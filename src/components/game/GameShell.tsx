@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { GameCanvas } from '@/components/game/GameCanvas';
@@ -20,11 +21,8 @@ export function GameShell() {
   const [finalScore, setFinalScore] = useState(0);
   const [lives, setLives] = useState(MAX_LIVES);
   const [muted, setMuted] = useState(false);
-  // `roundKey` forces GameCanvas to remount (fresh World) on each replay.
   const [roundKey, setRoundKey] = useState(0);
 
-  // Mirror the live score so the game-over snapshot doesn't go stale through
-  // the useCallback closure.
   const scoreRef = useRef(0);
 
   const audioRef = useRef<AudioManager | null>(null);
@@ -36,7 +34,6 @@ export function GameShell() {
   }, [audio, muted]);
 
   const startRound = useCallback(() => {
-    // Browsers require a user gesture before audio can play; this click qualifies.
     audio.preload();
     scoreRef.current = 0;
     setScore(0);
@@ -52,38 +49,49 @@ export function GameShell() {
   }, []);
   const handleLivesChange = useCallback((l: number) => setLives(l), []);
   const handleGameOver = useCallback(() => {
-    // Snapshot the final score *before* React commits anything that could
-    // wipe the live score (e.g. the canvas remounting).
     setFinalScore(scoreRef.current);
     setPhase('gameOver');
   }, []);
   const handleToggleMute = useCallback(() => setMuted((m) => !m), []);
 
-  // Collapse 'playing' and 'gameOver' into the same transition group so the
-  // canvas/world subtree stays mounted across game-over (and the live score
-  // doesn't get reset by a canvas remount).
   const screenKey = phase === 'idle' ? 'idle' : 'in-game';
 
   return (
     <div className="relative flex w-full flex-col items-center gap-6">
       <ScreenTransition screenKey={screenKey}>
         {phase === 'idle' ? (
-          <Panel tone="cyan" className="mx-auto w-full max-w-md space-y-6 p-8 text-center">
-            <p className="text-[10px] uppercase tracking-[0.5em] text-neon-cyan/80 text-glow-cyan">
-              // Ready
-            </p>
-            <h2 className="text-2xl font-bold uppercase tracking-[0.3em] text-neon-green text-glow-green">
-              Round Start
-            </h2>
-            <ul className="mx-auto max-w-xs space-y-1.5 text-left text-[11px] uppercase tracking-[0.2em] text-neon-green/60">
-              <li>· Tap or click bubbles to pop them</li>
-              <li>· Chains multiply your score</li>
-              <li>· 3 misses ends the run</li>
-            </ul>
-            <NeonButton tone="green" size="lg" fullWidth onClick={startRound}>
-              Start Round
-            </NeonButton>
-          </Panel>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-auto w-full max-w-md"
+          >
+            <Panel variant="glass" className="space-y-7 p-8 text-center sm:p-10">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-500">
+                  Ready to play
+                </p>
+                <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-gradient-ocean sm:text-4xl">
+                  Pop &amp; Chain
+                </h2>
+              </div>
+
+              <div className="space-y-3 rounded-2xl bg-sky-50/70 p-5 ring-1 ring-sky-100">
+                <Rule emoji="🎯" text="Tap or drag to aim. Release to fire." />
+                <Rule emoji="✨" text="Match 3+ same-color bubbles to pop them." />
+                <Rule emoji="⚡" text="Chain combos for huge multipliers." />
+                <Rule emoji="❤️" text="3 misses jolts the ceiling down." />
+              </div>
+
+              <NeonButton tone="primary" size="lg" fullWidth onClick={startRound}>
+                ▶ Start Round
+              </NeonButton>
+
+              <p className="text-[11px] text-ink-400">
+                No wallet needed to play. Connect when you want to submit a score.
+              </p>
+            </Panel>
+          </motion.div>
         ) : (
           <div className="flex w-full flex-col items-center gap-4">
             <HUD
@@ -108,6 +116,17 @@ export function GameShell() {
           </div>
         )}
       </ScreenTransition>
+    </div>
+  );
+}
+
+function Rule({ emoji, text }: { emoji: string; text: string }) {
+  return (
+    <div className="flex items-center gap-3 text-left">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-base shadow-sm ring-1 ring-sky-100">
+        {emoji}
+      </span>
+      <span className="text-sm text-ink-600">{text}</span>
     </div>
   );
 }

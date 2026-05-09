@@ -521,12 +521,16 @@ export class World {
   // -- rendering ----------------------------------------------------------
 
   render(ctx: CanvasRenderingContext2D) {
-    // Background fill (matches site background).
-    ctx.fillStyle = '#05070a';
+    // Soft sky-blue gradient backdrop matching the page theme.
+    const bg = ctx.createLinearGradient(0, 0, 0, PHYS.worldHeight);
+    bg.addColorStop(0, '#bae6fd');
+    bg.addColorStop(0.5, '#e0f2fe');
+    bg.addColorStop(1, '#f0f9ff');
+    ctx.fillStyle = bg;
     ctx.fillRect(0, 0, PHYS.worldWidth, PHYS.worldHeight);
 
-    // Subtle grid backdrop.
-    ctx.strokeStyle = 'rgba(0, 255, 157, 0.06)';
+    // Subtle grid lines for depth.
+    ctx.strokeStyle = 'rgba(14, 165, 233, 0.07)';
     ctx.lineWidth = 1;
     for (let x = 0; x <= PHYS.worldWidth; x += 24) {
       ctx.beginPath();
@@ -543,7 +547,7 @@ export class World {
 
     // Ceiling line at y = descend (where the grid hangs from).
     ctx.save();
-    ctx.strokeStyle = 'rgba(0, 229, 255, 0.35)';
+    ctx.strokeStyle = 'rgba(2, 132, 199, 0.35)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, this.descend);
@@ -554,9 +558,9 @@ export class World {
     // Danger line.
     ctx.save();
     ctx.setLineDash([6, 4]);
-    ctx.strokeStyle = 'rgba(255, 45, 149, 0.55)';
+    ctx.strokeStyle = 'rgba(244, 63, 94, 0.7)';
     ctx.lineWidth = 1.5;
-    ctx.shadowColor = 'rgba(255, 45, 149, 0.5)';
+    ctx.shadowColor = 'rgba(244, 63, 94, 0.45)';
     ctx.shadowBlur = 6;
     ctx.beginPath();
     ctx.moveTo(0, PHYS.dangerY);
@@ -596,10 +600,10 @@ export class World {
 
     if (this.combo > 1) {
       ctx.save();
-      ctx.fillStyle = '#00e5ff';
-      ctx.font = 'bold 14px ui-monospace, monospace';
+      ctx.fillStyle = '#0369a1';
+      ctx.font = 'bold 14px Inter, ui-sans-serif, system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.shadowColor = '#00e5ff';
+      ctx.shadowColor = 'rgba(14, 165, 233, 0.6)';
       ctx.shadowBlur = 10;
       ctx.fillText(`x${this.combo} CHAIN`, PHYS.worldWidth / 2, 24);
       ctx.restore();
@@ -639,8 +643,8 @@ export class World {
 
     // Arc base mount.
     ctx.save();
-    ctx.fillStyle = 'rgba(0, 255, 157, 0.08)';
-    ctx.strokeStyle = 'rgba(0, 255, 157, 0.45)';
+    ctx.fillStyle = 'rgba(14, 165, 233, 0.10)';
+    ctx.strokeStyle = 'rgba(2, 132, 199, 0.55)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.arc(origin.x, origin.y + 6, 34, Math.PI, 2 * Math.PI);
@@ -655,7 +659,7 @@ export class World {
       const px = origin.x + (vx / len) * 30;
       const py = origin.y + (vy / len) * 30;
       ctx.save();
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.5)';
+      ctx.strokeStyle = 'rgba(2, 132, 199, 0.6)';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(origin.x, origin.y);
@@ -674,8 +678,8 @@ export class World {
     const ny = origin.y + 4;
     renderBubble(ctx, nx, ny, PHYS.bubbleRadius * 0.65, this.next, 0.75);
     ctx.save();
-    ctx.fillStyle = 'rgba(0, 229, 255, 0.55)';
-    ctx.font = '8px ui-monospace, monospace';
+    ctx.fillStyle = 'rgba(2, 132, 199, 0.7)';
+    ctx.font = '600 9px Inter, ui-sans-serif, system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('NEXT', nx, ny - 18);
     ctx.restore();

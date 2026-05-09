@@ -8,20 +8,24 @@ import { NeonButton } from '@/components/ui/NeonButton';
 
 export default function PlayPage() {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-6 py-8">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-6 sm:py-8">
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link href="/">
-          <NeonButton tone="cyan" size="sm">
+          <NeonButton tone="secondary" size="sm">
             ← Menu
           </NeonButton>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link href="/leaderboard">
-            <NeonButton tone="green" size="sm">
-              Leaderboard
+            <NeonButton tone="ghost" size="sm">
+              🏆 Leaderboard
             </NeonButton>
           </Link>
-          <ConnectButton accountStatus="address" chainStatus="icon" showBalance={false} />
+          <ConnectButton
+            accountStatus={{ smallScreen: 'avatar', largeScreen: 'address' }}
+            chainStatus="icon"
+            showBalance={false}
+          />
         </div>
       </header>
 

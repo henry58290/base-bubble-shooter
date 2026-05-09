@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #05070a;
+  --color-panel: #0c1117;
+  --color-neon-green: #00ff9d;
+  --color-neon-cyan: #00e5ff;
+  --color-neon-magenta: #ff2d95;
+  --color-grid: rgba(0, 255, 157, 0.06);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background:
+    /* subtle scanline grid */
+    linear-gradient(var(--color-grid) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px) 0 0 / 32px 32px,
+    /* ambient color washes */ radial-gradient(
+      ellipse at top,
+      rgba(0, 229, 255, 0.1),
+      transparent 60%
+    ),
+    radial-gradient(ellipse at bottom, rgba(0, 255, 157, 0.1), transparent 60%),
+    var(--color-bg);
+  color: var(--color-neon-green);
+  font-family: ui-monospace, 'JetBrains Mono', 'Fira Code', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide default focus rings — RainbowKit + our buttons supply their own glow. */
+button:focus,
+a:focus {
+  outline: none;
+}
+
+@layer utilities {
+  .text-glow-green {
+    text-shadow:
+      0 0 6px rgba(0, 255, 157, 0.7),
+      0 0 18px rgba(0, 255, 157, 0.45);
+  }
+  .text-glow-cyan {
+    text-shadow:
+      0 0 6px rgba(0, 229, 255, 0.7),
+      0 0 18px rgba(0, 229, 255, 0.45);
+  }
+  .text-glow-magenta {
+    text-shadow:
+      0 0 6px rgba(255, 45, 149, 0.7),
+      0 0 18px rgba(255, 45, 149, 0.45);
+  }
+  .border-glow-green {
+    box-shadow:
+      0 0 0 1px rgba(0, 255, 157, 0.35),
+      0 0 24px rgba(0, 255, 157, 0.15);
+  }
+  .border-glow-cyan {
+    box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.35),
+      0 0 24px rgba(0, 229, 255, 0.15);
+  }
+}

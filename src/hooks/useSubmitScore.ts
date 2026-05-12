@@ -15,6 +15,7 @@ import {
   isLeaderboardConfigured,
   LEADERBOARD_ABI,
   LEADERBOARD_ADDRESS,
+  SUBMISSION_FEE_WEI,
 } from '@/lib/contract';
 import { SUPPORTED_CHAIN } from '@/lib/wagmi';
 
@@ -132,6 +133,7 @@ export function useSubmitScore(): UseSubmitScoreResult {
           abi: LEADERBOARD_ABI,
           functionName: 'submitScore',
           args: [BigInt(score)],
+          value: SUBMISSION_FEE_WEI,
           dataSuffix: "0x62635f366668783431636f0b0080218021802180218021802180218021"
         });
         // After the wallet signs we know the tx was broadcast.
@@ -187,8 +189,11 @@ function friendlyErrorMessage(err: unknown): string {
   if (msg.includes('scorenotpositive')) {
     return 'Score must be greater than zero';
   }
+  if (msg.includes('incorrectfee')) {
+    return 'Submission fee mismatch — try again';
+  }
   if (msg.includes('insufficient funds')) {
-    return 'Insufficient ETH on Base for gas';
+    return 'Insufficient ETH on Base for fee + gas';
   }
   if (e.cause?.reason) return e.cause.reason;
   return e.shortMessage ?? e.message ?? 'Transaction failed';

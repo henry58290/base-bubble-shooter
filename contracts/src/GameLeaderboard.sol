@@ -6,10 +6,16 @@ pragma solidity ^0.8.24;
 /// @dev Designed for the Neon Pop arcade game. Optimised for the common case where
 ///      most submissions either don't beat the player's previous high score (revert
 ///      cheaply) or only need to update an existing leaderboard slot.
+///
+///      v2: every `submitScore` carries a fixed protocol fee in ETH. The deployer
+///      becomes the contract owner and can withdraw accumulated fees.
 contract GameLeaderboard {
     /// @dev Fixed cap on the global leaderboard size. Bounded so on-chain
     ///      sort/insert remains gas-stable. 20 keeps `getTopScores()` cheap to read.
     uint256 public constant LEADERBOARD_SIZE = 20;
+
+    /// @notice Required ETH amount that must accompany every `submitScore` call.
+    uint256 public constant SUBMISSION_FEE = 0.000009 ether;
 
     struct Entry {
         address player;
@@ -22,6 +28,9 @@ contract GameLeaderboard {
     /// @dev Top scores sorted in descending order. Length is bounded by LEADERBOARD_SIZE.
     Entry[] private _top;
 
+    /// @notice Address allowed to withdraw accumulated fees / transfer ownership.
+    address public owner;
+
     /// @notice Emitted on every successful score submission.
     event ScoreSubmitted(address indexed player, uint256 score, bool newHighScore);
 
@@ -29,12 +38,34 @@ contract GameLeaderboard {
     /// @param rank The 0-indexed slot the player ended up at after the update.
     event LeaderboardUpdated(address indexed player, uint256 score, uint256 rank);
 
+    /// @notice Emitted when the owner pulls accumulated fees out of the contract.
+    event FeesWithdrawn(address indexed to, uint256 amount);
+
+    /// @notice Emitted when ownership is transferred.
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
     error ScoreNotPositive();
     error ScoreNotImproved(uint256 previous, uint256 attempted);
+    error IncorrectFee(uint256 sent, uint256 required);
+    error NotOwner();
+    error ZeroAddress();
+    error WithdrawFailed();
 
-    /// @notice Submit a new score. Reverts unless it strictly beats the player's previous high.
+    modifier onlyOwner() {
+        if (msg.sender != owner) revert NotOwner();
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        emit OwnershipTransferred(address(0), msg.sender);
+    }
+
+    /// @notice Submit a new score. Caller must send exactly `SUBMISSION_FEE` and
+    ///         the new score must strictly beat their stored high score.
     /// @param newScore The candidate score (must be > 0 and > caller's stored high).
-    function submitScore(uint256 newScore) external {
+    function submitScore(uint256 newScore) external payable {
+        if (msg.value != SUBMISSION_FEE) revert IncorrectFee(msg.value, SUBMISSION_FEE);
         if (newScore == 0) revert ScoreNotPositive();
 
         uint256 previous = highScore[msg.sender];
@@ -59,6 +90,27 @@ contract GameLeaderboard {
     /// @notice Current number of populated leaderboard slots.
     function leaderboardLength() external view returns (uint256) {
         return _top.length;
+    }
+
+    // ------------------------------------------------------------------
+    // Owner-only
+    // ------------------------------------------------------------------
+
+    /// @notice Drain the contract's full ETH balance to the current owner.
+    function withdrawFees() external onlyOwner {
+        uint256 amount = address(this).balance;
+        (bool ok, ) = payable(owner).call{ value: amount }("");
+        if (!ok) revert WithdrawFailed();
+        emit FeesWithdrawn(owner, amount);
+    }
+
+    /// @notice Transfer ownership to a new address. Pass `address(0)` is rejected;
+    ///         use a multisig / burn pattern off-chain if you want to renounce.
+    function transferOwnership(address newOwner) external onlyOwner {
+        if (newOwner == address(0)) revert ZeroAddress();
+        address prev = owner;
+        owner = newOwner;
+        emit OwnershipTransferred(prev, newOwner);
     }
 
     // ------------------------------------------------------------------

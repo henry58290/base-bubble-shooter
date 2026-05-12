@@ -1,4 +1,11 @@
-import { type Address, getAddress } from 'viem';
+import { type Address, getAddress, parseEther } from 'viem';
+
+/**
+ * Protocol fee charged per on-chain score submission. Must match
+ * `SUBMISSION_FEE` in `contracts/src/GameLeaderboard.sol`.
+ */
+export const SUBMISSION_FEE_ETH = '0.000009';
+export const SUBMISSION_FEE_WEI = parseEther(SUBMISSION_FEE_ETH);
 
 /**
  * Address of the deployed GameLeaderboard contract on Base Mainnet.
@@ -35,9 +42,37 @@ export const LEADERBOARD_ABI = [
   {
     type: 'function',
     name: 'submitScore',
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
     inputs: [{ name: 'newScore', type: 'uint256' }],
     outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'withdrawFees',
+    stateMutability: 'nonpayable',
+    inputs: [],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'transferOwnership',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'newOwner', type: 'address' }],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'owner',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'address' }],
+  },
+  {
+    type: 'function',
+    name: 'SUBMISSION_FEE',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
   },
   {
     type: 'function',

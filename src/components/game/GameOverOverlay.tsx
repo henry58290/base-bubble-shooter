@@ -8,7 +8,7 @@ import { useAccount } from 'wagmi';
 import { NeonButton } from '@/components/ui/NeonButton';
 import { Panel } from '@/components/ui/Panel';
 import { useSubmitScore, type SubmitState } from '@/hooks/useSubmitScore';
-import { isLeaderboardConfigured } from '@/lib/contract';
+import { isLeaderboardConfigured, SUBMISSION_FEE_ETH } from '@/lib/contract';
 import { formatScore } from '@/lib/format';
 
 type GameOverOverlayProps = {
@@ -113,6 +113,12 @@ export function GameOverOverlay({ score, onPlayAgain }: GameOverOverlayProps) {
             >
               ↻ Play Again
             </NeonButton>
+
+            {isConnected && isLeaderboardConfigured && !isConfirmed ? (
+              <p className="text-center text-[10px] font-medium uppercase tracking-[0.25em] text-sky-600/80">
+                Fee: {SUBMISSION_FEE_ETH} ETH <span className="text-ink-400">+ gas</span>
+              </p>
+            ) : null}
           </div>
 
           {explorerUrl ? (

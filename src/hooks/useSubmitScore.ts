@@ -190,7 +190,7 @@ function friendlyErrorMessage(err: unknown): string {
     return 'Score must be greater than zero';
   }
   if (msg.includes('incorrectfee')) {
-    return 'Submission fee mismatch — try again';
+    return 'App updated — please hard-refresh (Ctrl+Shift+R) and submit again';
   }
   if (msg.includes('insufficient funds')) {
     return 'Insufficient ETH on Base for fee + gas';

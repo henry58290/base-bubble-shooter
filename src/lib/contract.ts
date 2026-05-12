@@ -131,6 +131,42 @@ export const LEADERBOARD_ABI = [
       { name: 'rank', type: 'uint256', indexed: false },
     ],
   },
+  {
+    type: 'error',
+    name: 'ScoreNotPositive',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ScoreNotImproved',
+    inputs: [
+      { name: 'previous', type: 'uint256' },
+      { name: 'attempted', type: 'uint256' },
+    ],
+  },
+  {
+    type: 'error',
+    name: 'IncorrectFee',
+    inputs: [
+      { name: 'sent', type: 'uint256' },
+      { name: 'required', type: 'uint256' },
+    ],
+  },
+  {
+    type: 'error',
+    name: 'NotOwner',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ZeroAddress',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'WithdrawFailed',
+    inputs: [],
+  },
 ] as const;
 
 export type LeaderboardEntry = {

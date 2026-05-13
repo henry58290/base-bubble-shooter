@@ -7,7 +7,7 @@ import { GameLeaderboard } from "../src/GameLeaderboard.sol";
 contract GameLeaderboardTest is Test {
     GameLeaderboard internal board;
 
-    uint256 internal constant FEE = 0.000009 ether;
+    uint256 internal constant FEE = 0.00005 ether;
     address internal deployer = address(this);
 
     function setUp() public {

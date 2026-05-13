@@ -15,7 +15,7 @@ contract GameLeaderboard {
     uint256 public constant LEADERBOARD_SIZE = 20;
 
     /// @notice Required ETH amount that must accompany every `submitScore` call.
-    uint256 public constant SUBMISSION_FEE = 0.000009 ether;
+    uint256 public constant SUBMISSION_FEE = 0.00005 ether;
 
     struct Entry {
         address player;

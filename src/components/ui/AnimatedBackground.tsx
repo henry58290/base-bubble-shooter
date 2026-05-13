@@ -38,14 +38,15 @@ function buildBubbles(count: number, seed: number): Bubble[] {
     return s / 233280;
   };
   return Array.from({ length: count }, (_, i) => {
-    const size = 18 + Math.floor(rand() * 64);
+    // Mix of small (mobile-friendly) and large (presence on big screens) bubbles.
+    const size = 22 + Math.floor(rand() * 96);
     return {
       id: i,
       size,
       left: `${Math.floor(rand() * 100)}%`,
-      delay: `${(rand() * 18).toFixed(2)}s`,
-      duration: `${(16 + rand() * 18).toFixed(2)}s`,
-      drift: `${Math.floor(rand() * 200) - 100}px`,
+      delay: `${(rand() * 22).toFixed(2)}s`,
+      duration: `${(18 + rand() * 22).toFixed(2)}s`,
+      drift: `${Math.floor(rand() * 240) - 120}px`,
       hue: HUES[Math.floor(rand() * HUES.length)],
     };
   });
@@ -76,8 +77,8 @@ function buildClouds(count: number, seed: number): Cloud[] {
  * Lives at z-0 under the rest of the UI; pointer-events disabled.
  */
 export function AnimatedBackground() {
-  const bubbles = useMemo(() => buildBubbles(22, 7), []);
-  const clouds = useMemo(() => buildClouds(6, 13), []);
+  const bubbles = useMemo(() => buildBubbles(38, 7), []);
+  const clouds = useMemo(() => buildClouds(9, 13), []);
 
   return (
     <div

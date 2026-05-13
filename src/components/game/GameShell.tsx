@@ -57,43 +57,48 @@ export function GameShell() {
   const screenKey = phase === 'idle' ? 'idle' : 'in-game';
 
   return (
-    <div className="relative flex w-full flex-col items-center gap-6">
+    <div className="relative flex w-full flex-col items-center gap-6 lg:gap-10">
       <ScreenTransition screenKey={screenKey}>
         {phase === 'idle' ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto w-full max-w-md"
+            className="mx-auto w-full max-w-md lg:max-w-xl xl:max-w-2xl"
           >
-            <Panel variant="glass" className="space-y-7 p-8 text-center sm:p-10">
+            <Panel
+              variant="glass"
+              className="space-y-7 p-8 text-center sm:p-10 lg:space-y-9 lg:p-14 xl:p-16"
+            >
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-500">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-500 lg:text-xs">
                   Ready to play
                 </p>
-                <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-gradient-ocean sm:text-4xl">
+                <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-gradient-ocean sm:text-4xl lg:text-5xl xl:text-6xl">
                   Pop &amp; Chain
                 </h2>
               </div>
 
-              <div className="space-y-3 rounded-2xl bg-sky-50/70 p-5 ring-1 ring-sky-100">
+              <div className="space-y-3 rounded-2xl bg-sky-50/70 p-5 ring-1 ring-sky-100 lg:space-y-4 lg:p-7">
                 <Rule emoji="🎯" text="Tap or drag to aim. Release to fire." />
                 <Rule emoji="✨" text="Match 3+ same-color bubbles to pop them." />
                 <Rule emoji="⚡" text="Chain combos for huge multipliers." />
                 <Rule emoji="❤️" text="3 misses jolts the ceiling down." />
               </div>
 
-              <NeonButton tone="primary" size="lg" fullWidth onClick={startRound}>
+              <NeonButton
+                tone="primary"
+                size="lg"
+                fullWidth
+                onClick={startRound}
+                className="lg:py-5 lg:text-lg"
+              >
                 ▶ Start Round
               </NeonButton>
-
-              <p className="text-[11px] text-ink-400">
-                No wallet needed to play. Connect when you want to submit a score.
-              </p>
             </Panel>
           </motion.div>
         ) : (
-          <div className="flex w-full flex-col items-center gap-4">
+          <div className="flex w-full flex-col items-center gap-4 lg:gap-6">
             <HUD
               score={phase === 'gameOver' ? finalScore : score}
               lives={lives}
@@ -101,7 +106,7 @@ export function GameShell() {
               muted={muted}
               onToggleMute={handleToggleMute}
             />
-            <div className="relative w-full max-w-md">
+            <div className="relative w-full max-w-md lg:max-w-lg xl:max-w-xl">
               <GameCanvas
                 key={roundKey}
                 audio={audio}
@@ -122,11 +127,11 @@ export function GameShell() {
 
 function Rule({ emoji, text }: { emoji: string; text: string }) {
   return (
-    <div className="flex items-center gap-3 text-left">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-base shadow-sm ring-1 ring-sky-100">
+    <div className="flex items-center gap-3 text-left lg:gap-4">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-base shadow-sm ring-1 ring-sky-100 lg:h-10 lg:w-10 lg:text-lg">
         {emoji}
       </span>
-      <span className="text-sm text-ink-600">{text}</span>
+      <span className="text-sm text-ink-600 lg:text-base">{text}</span>
     </div>
   );
 }

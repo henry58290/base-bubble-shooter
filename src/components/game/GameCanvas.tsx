@@ -173,7 +173,7 @@ export function GameCanvas({
   return (
     <div
       ref={containerRef}
-      className="relative aspect-[3/4] w-full max-w-md overflow-hidden rounded-3xl shadow-glass-lg ring-1 ring-white/60 bg-gradient-to-br from-sky-100/80 to-white/60 backdrop-blur-sm"
+      className="relative aspect-[3/4] w-full max-w-md overflow-hidden rounded-3xl shadow-glass-lg ring-1 ring-white/60 bg-gradient-to-br from-sky-100/80 to-white/60 backdrop-blur-sm lg:max-w-lg xl:max-w-xl"
     >
       <canvas
         ref={canvasRef}

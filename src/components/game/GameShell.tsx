@@ -79,7 +79,7 @@ export function GameShell() {
                 </h2>
               </div>
 
-              <div className="space-y-3 rounded-2xl bg-sky-50/70 p-5 ring-1 ring-sky-100 lg:space-y-4 lg:p-7">
+              <div className="space-y-3 rounded-2xl bg-white/[0.03] p-5 ring-1 ring-emerald-400/20 lg:space-y-4 lg:p-7">
                 <Rule emoji="🎯" text="Tap or drag to aim. Release to fire." />
                 <Rule emoji="✨" text="Match 3+ same-color bubbles to pop them." />
                 <Rule emoji="⚡" text="Chain combos for huge multipliers." />
@@ -128,7 +128,7 @@ export function GameShell() {
 function Rule({ emoji, text }: { emoji: string; text: string }) {
   return (
     <div className="flex items-center gap-3 text-left lg:gap-4">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-base shadow-sm ring-1 ring-sky-100 lg:h-10 lg:w-10 lg:text-lg">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-400/10 text-base shadow-[0_0_18px_-4px_rgba(74,222,128,0.45)] ring-1 ring-emerald-400/40 lg:h-10 lg:w-10 lg:text-lg">
         {emoji}
       </span>
       <span className="text-sm text-ink-600 lg:text-base">{text}</span>

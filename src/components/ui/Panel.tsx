@@ -8,16 +8,16 @@ type PanelProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 const VARIANT: Record<NonNullable<PanelProps['variant']>, string> = {
-  glass: 'glass shadow-glass',
-  solid: 'bg-white border border-sky-100 shadow-glass',
-  dark: 'glass-dark text-sky-50 shadow-glass-lg',
+  glass: 'glass shadow-glass text-ink-900',
+  solid: 'bg-ink-100 border border-emerald-400/15 shadow-glass text-ink-900',
+  dark: 'glass-dark text-ink-900 shadow-glass-lg',
 };
 
 const TONE: Record<NonNullable<PanelProps['tone']>, string> = {
-  sky: 'ring-1 ring-sky-200/60',
-  pink: 'ring-1 ring-bubble-pink/30',
-  mint: 'ring-1 ring-bubble-mint/30',
-  violet: 'ring-1 ring-bubble-violet/30',
+  sky: 'ring-1 ring-emerald-400/20',
+  pink: 'ring-1 ring-rose-400/30',
+  mint: 'ring-1 ring-emerald-400/30',
+  violet: 'ring-1 ring-violet-400/30',
 };
 
 export function Panel({

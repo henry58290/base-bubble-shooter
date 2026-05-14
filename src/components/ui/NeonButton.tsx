@@ -18,16 +18,18 @@ type NeonButtonProps = Omit<HTMLMotionProps<'button'>, 'children'> & {
  * break; the visual is now a soft sky-blue gradient with glassy depth.
  */
 const TONE: Record<Tone, string> = {
-  primary:
-    'bg-gradient-to-b from-sky-400 to-sky-600 text-white shadow-[0_8px_24px_-8px_rgba(14,165,233,0.55)] hover:shadow-[0_12px_32px_-8px_rgba(14,165,233,0.7)] hover:from-sky-500 hover:to-sky-700 disabled:from-sky-300 disabled:to-sky-400',
+  // Glossy neon green→cyan ACCEPT-style button. Dark text for max contrast on
+  // the bright surface. The `btn-neon` utility (globals.css) owns the gradient
+  // + glow so we can keep the Tailwind class list short and readable.
+  primary: 'btn-neon font-bold',
   secondary:
-    'bg-white/80 text-sky-700 ring-1 ring-sky-200 shadow-[0_4px_14px_-4px_rgba(2,132,199,0.18)] hover:bg-white hover:ring-sky-300 hover:shadow-[0_8px_22px_-6px_rgba(2,132,199,0.28)]',
+    'bg-white/[0.04] text-emerald-200 ring-1 ring-emerald-400/40 shadow-[0_0_22px_-6px_rgba(74,222,128,0.45)] hover:bg-emerald-400/10 hover:ring-emerald-300/70 hover:text-emerald-100',
   ghost:
-    'bg-transparent text-sky-700 hover:bg-sky-50 hover:text-sky-900 ring-1 ring-transparent hover:ring-sky-200',
+    'bg-transparent text-cyan-200 hover:bg-white/[0.04] hover:text-cyan-100 ring-1 ring-transparent hover:ring-cyan-400/40',
   danger:
-    'bg-gradient-to-b from-bubble-pink to-rose-500 text-white shadow-[0_8px_24px_-8px_rgba(244,63,94,0.55)] hover:shadow-[0_12px_32px_-8px_rgba(244,63,94,0.7)]',
+    'bg-gradient-to-b from-rose-400 to-rose-600 text-white shadow-[0_0_28px_-4px_rgba(244,63,94,0.55)] hover:from-rose-300 hover:to-rose-500 hover:shadow-[0_0_40px_-4px_rgba(244,63,94,0.75)]',
   success:
-    'bg-gradient-to-b from-bubble-mint to-emerald-500 text-white shadow-[0_8px_24px_-8px_rgba(16,185,129,0.5)] hover:shadow-[0_12px_32px_-8px_rgba(16,185,129,0.65)]',
+    'btn-neon font-bold',
 };
 
 // Map legacy tones (green/cyan/magenta) onto the new palette so existing callers keep working.

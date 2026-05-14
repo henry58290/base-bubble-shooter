@@ -11,9 +11,11 @@
   --color-sky-500: #0ea5e9;
   --color-sky-600: #0284c7;
   --color-sky-700: #0369a1;
-  --color-ink-900: #0f172a;
-  --color-ink-800: #1e293b;
-  --color-ink-600: #475569;
+  --color-neon-green: #4ade80;
+  --color-neon-cyan: #22d3ee;
+  --color-bg-base: #04070d;
+  --color-text-primary: #f1f5f9;
+  --color-text-muted: #94a3b8;
 }
 
 html,
@@ -23,12 +25,14 @@ body {
 
 body {
   background:
-    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(186, 230, 253, 0.85), transparent 70%),
-    radial-gradient(ellipse 90% 50% at 80% 100%, rgba(125, 211, 252, 0.55), transparent 65%),
-    radial-gradient(ellipse 80% 50% at 10% 90%, rgba(186, 230, 253, 0.45), transparent 65%),
-    linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 35%, #ffffff 70%, #e0f2fe 100%);
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(34, 211, 238, 0.12), transparent 60%),
+    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(74, 222, 128, 0.10), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 0% 30%, rgba(56, 189, 248, 0.07), transparent 65%),
+    radial-gradient(ellipse 60% 40% at 100% 70%, rgba(167, 139, 250, 0.06), transparent 65%),
+    linear-gradient(180deg, #04070d 0%, #070b16 35%, #04070d 70%, #06090f 100%);
+  background-color: #04070d;
   background-attachment: fixed;
-  color: var(--color-ink-900);
+  color: var(--color-text-primary);
   font-family: var(--font-sans), Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -37,7 +41,7 @@ body {
 
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--color-sky-400);
+  outline: 2px solid var(--color-neon-green);
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -47,69 +51,124 @@ a:focus {
   outline: none;
 }
 
-/* RainbowKit light overrides — soften the modal so it sits on the sky theme. */
+/* RainbowKit dark overrides — modal should sit on the dark cyberpunk theme. */
 [data-rk] {
   --rk-radii-modal: 20px;
   --rk-radii-modalMobile: 24px;
 }
 
 @layer utilities {
+  /* All glass surfaces are now dark with subtle neon borders, so existing
+   * Panel callers automatically inherit the new look. */
   .glass {
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.78) 0%,
-      rgba(240, 249, 255, 0.62) 100%
+      rgba(15, 23, 42, 0.68) 0%,
+      rgba(8, 14, 22, 0.58) 100%
     );
     backdrop-filter: blur(18px) saturate(140%);
     -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(74, 222, 128, 0.18);
   }
   .glass-strong {
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.92) 0%,
-      rgba(224, 242, 254, 0.78) 100%
+      rgba(15, 23, 42, 0.88) 0%,
+      rgba(8, 14, 22, 0.82) 100%
     );
-    backdrop-filter: blur(24px) saturate(140%);
-    -webkit-backdrop-filter: blur(24px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    border: 1px solid rgba(74, 222, 128, 0.32);
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.08),
+      0 0 40px -6px rgba(74, 222, 128, 0.28),
+      0 28px 80px -16px rgba(0, 0, 0, 0.75),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   }
   .glass-dark {
     background: linear-gradient(
       180deg,
-      rgba(15, 23, 42, 0.82) 0%,
-      rgba(7, 89, 133, 0.78) 100%
+      rgba(5, 9, 18, 0.92) 0%,
+      rgba(8, 14, 22, 0.88) 100%
     );
-    backdrop-filter: blur(20px) saturate(150%);
-    -webkit-backdrop-filter: blur(20px) saturate(150%);
-    border: 1px solid rgba(186, 230, 253, 0.18);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border: 1px solid rgba(34, 211, 238, 0.22);
   }
+  .neon-border {
+    position: relative;
+    border: 1px solid rgba(74, 222, 128, 0.35);
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.08),
+      0 0 36px -6px rgba(74, 222, 128, 0.3),
+      0 0 80px -20px rgba(34, 211, 238, 0.25);
+  }
+  /* Both legacy gradient text classes now render as the neon green→cyan
+   * sweep, so titles across the app pick up the new accent automatically. */
   .text-gradient-sky {
-    background: linear-gradient(180deg, #0369a1 0%, #0ea5e9 60%, #38bdf8 100%);
+    background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
   .text-gradient-ocean {
-    background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #0ea5e9 100%);
+    background: linear-gradient(135deg, #34d399 0%, #22d3ee 55%, #38bdf8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
+  .text-gradient-neon {
+    background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 28px rgba(74, 222, 128, 0.4);
+  }
+  .text-neon-green {
+    color: #4ade80;
+    text-shadow: 0 0 12px rgba(74, 222, 128, 0.45);
+  }
+  .text-neon-cyan {
+    color: #22d3ee;
+    text-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
+  }
   .ring-glow {
     box-shadow:
-      0 0 0 1px rgba(56, 189, 248, 0.4),
-      0 0 24px rgba(14, 165, 233, 0.25);
+      0 0 0 1px rgba(74, 222, 128, 0.45),
+      0 0 28px rgba(34, 211, 238, 0.3);
+  }
+  /* Glossy ACCEPT-style neon button surface. The element itself owns the
+   * gradient + glow so the NeonButton can compose it via a className. */
+  .btn-neon {
+    background: linear-gradient(180deg, #5eead4 0%, #4ade80 45%, #22d3ee 100%);
+    color: #04070d;
+    box-shadow:
+      0 0 32px -4px rgba(74, 222, 128, 0.7),
+      0 0 64px -16px rgba(34, 211, 238, 0.5),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
+      inset 0 -2px 0 0 rgba(0, 0, 0, 0.18);
+  }
+  .btn-neon:hover {
+    background: linear-gradient(180deg, #6ee7b7 0%, #5eead4 45%, #38bdf8 100%);
+    box-shadow:
+      0 0 44px -4px rgba(74, 222, 128, 0.9),
+      0 0 80px -16px rgba(34, 211, 238, 0.65),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.65);
+  }
+  .btn-neon:disabled {
+    background: linear-gradient(180deg, #064e3b 0%, #052e2b 100%);
+    color: #94a3b8;
+    box-shadow: none;
   }
   .scrollbar-clean::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   .scrollbar-clean::-webkit-scrollbar-thumb {
-    background: rgba(56, 189, 248, 0.45);
+    background: rgba(34, 211, 238, 0.45);
     border-radius: 8px;
   }
   .scrollbar-clean::-webkit-scrollbar-track {
-    background: rgba(224, 242, 254, 0.5);
+    background: rgba(8, 14, 22, 0.6);
   }
 }

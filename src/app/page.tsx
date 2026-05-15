@@ -30,7 +30,7 @@ export default function HomePage() {
             >
               <Image
                 src="/basedlogo.png"
-                alt="Bubble Pop on Base"
+                alt="Based Bubble Shooter"
                 width={144}
                 height={144}
                 priority
@@ -39,8 +39,10 @@ export default function HomePage() {
             </motion.div>
 
             <div className="space-y-3 lg:space-y-4">
-              <h1 className="font-display text-[44px] font-extrabold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl xl:text-8xl">
-                Bubble <span className="text-gradient-neon">Pop</span>
+              <h1 className="font-display font-extrabold leading-[0.9] tracking-tight text-white">
+                <span className="block text-[40px] sm:text-5xl lg:text-6xl xl:text-7xl">BASED</span>
+                <span className="block text-[40px] sm:text-5xl lg:text-6xl xl:text-7xl">BUBBLE</span>
+                <span className="block text-gradient-neon text-[40px] sm:text-5xl lg:text-6xl xl:text-7xl">SHOOTER</span>
               </h1>
               <p className="mx-auto max-w-xs text-sm leading-relaxed text-slate-300/85 sm:text-base lg:max-w-sm lg:text-lg xl:max-w-md xl:text-xl">
                 Pop bubbles, chain combos, climb the on-chain leaderboard.

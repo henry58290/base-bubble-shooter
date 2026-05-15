@@ -17,7 +17,7 @@ import {
   LEADERBOARD_ADDRESS,
   SUBMISSION_FEE_WEI,
 } from '@/lib/contract';
-import { SUPPORTED_CHAIN } from '@/lib/wagmi';
+import { DATA_SUFFIX, SUPPORTED_CHAIN } from '@/lib/wagmi';
 
 const TOAST_ID = 'submit-score';
 
@@ -134,7 +134,7 @@ export function useSubmitScore(): UseSubmitScoreResult {
           functionName: 'submitScore',
           args: [BigInt(score)],
           value: SUBMISSION_FEE_WEI,
-          dataSuffix: "0x62635f366668783431636f0b0080218021802180218021802180218021"
+          dataSuffix: DATA_SUFFIX,
         });
         // After the wallet signs we know the tx was broadcast.
         toast.loading('Submitting transaction…', { id: TOAST_ID });

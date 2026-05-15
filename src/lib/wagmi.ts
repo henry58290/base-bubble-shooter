@@ -6,8 +6,16 @@ import {
   rainbowWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
+import { Attribution } from 'ox/erc8021';
 import { createConfig, http } from 'wagmi';
 import { base } from 'wagmi/chains';
+
+// Builder Code from base.dev > Settings > Builder Codes. Appended to every
+// transaction as an ERC-8021 attribution suffix so on-chain analytics can
+// credit this app for the activity it drives.
+export const DATA_SUFFIX = Attribution.toDataSuffix({
+  codes: ['bc_5zzb4pqj'],
+});
 
 // We deliberately ship a *single* chain (Base Mainnet, chainId 8453) so that
 // RainbowKit's network switcher cannot accidentally land the user on a chain

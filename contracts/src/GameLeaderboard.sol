@@ -11,11 +11,11 @@ pragma solidity ^0.8.24;
 ///      becomes the contract owner and can withdraw accumulated fees.
 contract GameLeaderboard {
     /// @dev Fixed cap on the global leaderboard size. Bounded so on-chain
-    ///      sort/insert remains gas-stable. 20 keeps `getTopScores()` cheap to read.
-    uint256 public constant LEADERBOARD_SIZE = 20;
+    ///      sort/insert remains gas-stable.
+    uint256 public constant LEADERBOARD_SIZE = 100;
 
     /// @notice Required ETH amount that must accompany every `submitScore` call.
-    uint256 public constant SUBMISSION_FEE = 0.00005 ether;
+    uint256 public constant SUBMISSION_FEE = 0.000025 ether;
 
     struct Entry {
         address player;

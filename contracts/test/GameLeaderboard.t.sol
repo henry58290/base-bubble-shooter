@@ -7,7 +7,7 @@ import { GameLeaderboard } from "../src/GameLeaderboard.sol";
 contract GameLeaderboardTest is Test {
     GameLeaderboard internal board;
 
-    uint256 internal constant FEE = 0.00005 ether;
+    uint256 internal constant FEE = 0.000025 ether;
     address internal deployer = address(this);
 
     function setUp() public {
@@ -177,22 +177,22 @@ contract GameLeaderboardTest is Test {
         assertEq(top.length, 2);
     }
 
-    function test_CapsAtTwenty() public {
-        // Submit 25 distinct players with strictly increasing scores.
-        for (uint256 i; i < 25; ++i) {
+    function test_CapsAtHundred() public {
+        // Submit 105 distinct players with strictly increasing scores.
+        for (uint256 i; i < 105; ++i) {
             address player = address(uint160(0x1000 + i));
             vm.deal(player, 1 ether);
             vm.prank(player);
             board.submitScore{ value: FEE }((i + 1) * 10);
         }
 
-        assertEq(board.leaderboardLength(), 20);
+        assertEq(board.leaderboardLength(), 100);
 
         GameLeaderboard.Entry[] memory top = board.getTopScores();
-        // Top score is the latest (largest) one: 25 * 10 = 250.
-        assertEq(top[0].score, 250);
+        // Top score is the latest (largest) one: 105 * 10 = 1050.
+        assertEq(top[0].score, 1050);
         // Entries 1..5 should be evicted; lowest remaining is 6 * 10 = 60.
-        assertEq(top[19].score, 60);
+        assertEq(top[99].score, 60);
 
         // Confirm sorted ordering across the whole array.
         for (uint256 i = 1; i < top.length; ++i) {
@@ -202,7 +202,7 @@ contract GameLeaderboardTest is Test {
 
     function test_LowerScoreFromNewPlayerDoesNotEvict() public {
         // Fill the board with strong scores.
-        for (uint256 i; i < 20; ++i) {
+        for (uint256 i; i < 100; ++i) {
             address player = address(uint160(0x2000 + i));
             vm.deal(player, 1 ether);
             vm.prank(player);
@@ -216,7 +216,7 @@ contract GameLeaderboardTest is Test {
 
         // Newcomer's high score is recorded, but the leaderboard is unchanged.
         assertEq(board.getHighScore(newcomer), 10);
-        assertEq(board.leaderboardLength(), 20);
+        assertEq(board.leaderboardLength(), 100);
 
         GameLeaderboard.Entry[] memory top = board.getTopScores();
         for (uint256 i; i < top.length; ++i) {

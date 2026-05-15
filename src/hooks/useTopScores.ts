@@ -18,7 +18,11 @@ type UseTopScoresResult = {
 };
 
 /**
- * Reads the global top-20 from the GameLeaderboard contract on Base.
+ * Reads the global top-100 from the GameLeaderboard contract on Base.
+ * Polls every 5s so the leaderboard auto-refreshes silently; `placeholderData`
+ * preserves the previous list during each refetch so the table never flashes
+ * empty / loading between ticks.
+ *
  * Falls back to an empty list if NEXT_PUBLIC_LEADERBOARD_ADDRESS isn't set yet.
  */
 export function useTopScores(): UseTopScoresResult {
@@ -28,7 +32,9 @@ export function useTopScores(): UseTopScoresResult {
     functionName: 'getTopScores',
     query: {
       enabled: isLeaderboardConfigured,
-      refetchInterval: 15_000,
+      refetchInterval: 5_000,
+      refetchIntervalInBackground: false,
+      placeholderData: (previous) => previous,
     },
   });
 

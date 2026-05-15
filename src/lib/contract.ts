@@ -4,7 +4,7 @@ import { type Address, getAddress, parseEther } from 'viem';
  * Protocol fee charged per on-chain score submission. Must match
  * `SUBMISSION_FEE` in `contracts/src/GameLeaderboard.sol`.
  */
-export const SUBMISSION_FEE_ETH = '0.00005';
+export const SUBMISSION_FEE_ETH = '0.000025';
 export const SUBMISSION_FEE_WEI = parseEther(SUBMISSION_FEE_ETH);
 
 /**

@@ -142,9 +142,14 @@ function Table({
               return (
                 <motion.tr
                   key={entry.player}
+                  layout
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.025, duration: 0.2 }}
+                  transition={{
+                    // Cap stagger so a 100-row table finishes in ~0.3s, not 2.5s.
+                    delay: Math.min(index * 0.015, 0.3),
+                    duration: 0.2,
+                  }}
                   className={[
                     'border-b border-sky-100/70 transition-colors hover:bg-sky-50/70',
                     isYou ? 'bg-gradient-to-r from-sky-100/80 to-transparent' : '',

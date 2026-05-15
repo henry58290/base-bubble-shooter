@@ -57,7 +57,7 @@ export function GameShell() {
   const screenKey = phase === 'idle' ? 'idle' : 'in-game';
 
   return (
-    <div className="relative flex w-full flex-col items-center gap-6 lg:gap-10">
+    <div className="relative flex w-full flex-col items-center gap-6 lg:gap-4">
       <ScreenTransition screenKey={screenKey}>
         {phase === 'idle' ? (
           <motion.div
@@ -98,7 +98,7 @@ export function GameShell() {
             </Panel>
           </motion.div>
         ) : (
-          <div className="flex w-full flex-col items-center gap-4 lg:gap-6">
+          <div className="flex w-full flex-col items-center gap-4 lg:gap-3">
             <HUD
               score={phase === 'gameOver' ? finalScore : score}
               lives={lives}
@@ -106,7 +106,7 @@ export function GameShell() {
               muted={muted}
               onToggleMute={handleToggleMute}
             />
-            <div className="relative w-full max-w-md lg:max-w-lg xl:max-w-xl">
+            <div className="relative w-full max-w-md lg:max-w-[min(32rem,calc((100vh-12rem)*0.75))] xl:max-w-[min(36rem,calc((100vh-13rem)*0.75))]">
               <GameCanvas
                 key={roundKey}
                 audio={audio}

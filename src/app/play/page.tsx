@@ -14,8 +14,8 @@ export default function PlayPage() {
   const { openConnectModal } = useConnectModal();
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:max-w-5xl lg:py-12 xl:max-w-6xl xl:py-16">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-3 lg:mb-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:max-w-5xl lg:py-4 xl:max-w-6xl xl:py-6">
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-3 lg:mb-3 xl:mb-4">
         <Link href="/">
           <NeonButton tone="secondary" size="sm">
             ← Menu

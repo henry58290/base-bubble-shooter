@@ -78,7 +78,7 @@ export const LEADERBOARD_ABI = [
   },
   {
     type: 'function',
-    name: 'getHighScore',
+    name: 'getLatestScore',
     stateMutability: 'view',
     inputs: [{ name: 'player', type: 'address' }],
     outputs: [{ name: '', type: 'uint256' }],
@@ -104,7 +104,7 @@ export const LEADERBOARD_ABI = [
     inputs: [
       { name: 'player', type: 'address', indexed: true },
       { name: 'score', type: 'uint256', indexed: false },
-      { name: 'newHighScore', type: 'bool', indexed: false },
+      { name: 'improved', type: 'bool', indexed: false },
     ],
   },
   {

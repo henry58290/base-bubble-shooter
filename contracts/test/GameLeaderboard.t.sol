@@ -15,11 +15,11 @@ contract GameLeaderboardTest is Test {
 
     // -- submitScore --------------------------------------------------------
 
-    function test_RecordsHighScore() public {
+    function test_RecordsLatestScore() public {
         address alice = makeAddr("alice");
         vm.prank(alice);
         board.submitScore(100);
-        assertEq(board.getHighScore(alice), 100);
+        assertEq(board.getLatestScore(alice), 100);
     }
 
     function test_RejectsZeroScore() public {
@@ -34,26 +34,37 @@ contract GameLeaderboardTest is Test {
         address alice = makeAddr("alice");
         vm.prank(alice);
         board.submitScore(100);
-        assertEq(board.getHighScore(alice), 100);
+        assertEq(board.getLatestScore(alice), 100);
         assertEq(address(board).balance, 0);
     }
 
-    function test_AcceptsLowerOrEqualScore() public {
+    function test_LatestScoreOverwritesLower() public {
+        address alice = makeAddr("alice");
+
+        vm.prank(alice);
+        board.submitScore(100);
+        assertEq(board.getLatestScore(alice), 100);
+
+        // A lower submission overwrites the stored score (latest always wins).
+        vm.prank(alice);
+        board.submitScore(50);
+        assertEq(board.getLatestScore(alice), 50);
+
+        // An equal submission is likewise stored.
+        vm.prank(alice);
+        board.submitScore(50);
+        assertEq(board.getLatestScore(alice), 50);
+    }
+
+    function test_LatestScoreOverwritesHigher() public {
         address alice = makeAddr("alice");
 
         vm.prank(alice);
         board.submitScore(100);
 
-        // Resubmitting a lower score is accepted (no revert) but does not lower
-        // the stored high score.
         vm.prank(alice);
-        board.submitScore(50);
-        assertEq(board.getHighScore(alice), 100);
-
-        // Resubmitting an equal score is likewise accepted.
-        vm.prank(alice);
-        board.submitScore(100);
-        assertEq(board.getHighScore(alice), 100);
+        board.submitScore(150);
+        assertEq(board.getLatestScore(alice), 150);
     }
 
     function test_UnlimitedSubmissions() public {
@@ -62,18 +73,7 @@ contract GameLeaderboardTest is Test {
             vm.prank(alice);
             board.submitScore(42); // same score over and over, all accepted
         }
-        assertEq(board.getHighScore(alice), 42);
-    }
-
-    function test_AcceptsHigherScore() public {
-        address alice = makeAddr("alice");
-
-        vm.prank(alice);
-        board.submitScore(100);
-
-        vm.prank(alice);
-        board.submitScore(150);
-        assertEq(board.getHighScore(alice), 150);
+        assertEq(board.getLatestScore(alice), 42);
     }
 
     // -- ownership / withdraw ----------------------------------------------
@@ -127,7 +127,7 @@ contract GameLeaderboardTest is Test {
         vm.prank(bob);
         board.submitScore(100);
 
-        // Alice climbs above Bob.
+        // Alice climbs above Bob with a higher latest score.
         vm.prank(alice);
         board.submitScore(200);
 
@@ -140,20 +140,59 @@ contract GameLeaderboardTest is Test {
         assertEq(top.length, 2);
     }
 
-    function test_LowerResubmitDoesNotDegradeLeaderboard() public {
+    function test_LowerResubmitDropsRank() public {
         address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
 
         vm.prank(alice);
+        board.submitScore(300);
+        vm.prank(bob);
         board.submitScore(200);
+        vm.prank(carol);
+        board.submitScore(100);
+        // Board: [alice 300, bob 200, carol 100]
 
-        // A later, weaker run must not pull the player's leaderboard slot down.
+        // Alice's next run is weaker — she should sink below bob but stay above carol.
         vm.prank(alice);
-        board.submitScore(10);
+        board.submitScore(150);
 
         GameLeaderboard.Entry[] memory top = board.getTopScores();
-        assertEq(top.length, 1);
-        assertEq(top[0].player, alice);
+        assertEq(top.length, 3);
+        assertEq(top[0].player, bob);
         assertEq(top[0].score, 200);
+        assertEq(top[1].player, alice);
+        assertEq(top[1].score, 150);
+        assertEq(top[2].player, carol);
+        assertEq(top[2].score, 100);
+    }
+
+    function test_LowerResubmitSinksToBottom() public {
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
+
+        vm.prank(alice);
+        board.submitScore(300);
+        vm.prank(bob);
+        board.submitScore(200);
+        vm.prank(carol);
+        board.submitScore(100);
+
+        // Alice drops below everyone — she should fall to the last slot.
+        vm.prank(alice);
+        board.submitScore(50);
+
+        GameLeaderboard.Entry[] memory top = board.getTopScores();
+        assertEq(top.length, 3);
+        assertEq(top[0].player, bob);
+        assertEq(top[1].player, carol);
+        assertEq(top[2].player, alice);
+        assertEq(top[2].score, 50);
+        // Sorted invariant holds.
+        for (uint256 i = 1; i < top.length; ++i) {
+            assertGe(top[i - 1].score, top[i].score);
+        }
     }
 
     function test_CapsAtHundred() public {
@@ -190,8 +229,8 @@ contract GameLeaderboardTest is Test {
         vm.prank(newcomer);
         board.submitScore(10); // well below the lowest current score
 
-        // Newcomer's high score is recorded, but the leaderboard is unchanged.
-        assertEq(board.getHighScore(newcomer), 10);
+        // Newcomer's latest score is recorded, but the leaderboard is unchanged.
+        assertEq(board.getLatestScore(newcomer), 10);
         assertEq(board.leaderboardLength(), 100);
 
         GameLeaderboard.Entry[] memory top = board.getTopScores();

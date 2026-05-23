@@ -4,17 +4,19 @@ pragma solidity ^0.8.24;
 import { Script, console2 } from "forge-std/Script.sol";
 import { GameLeaderboard } from "../src/GameLeaderboard.sol";
 
-/// @notice Deploys GameLeaderboard. Reads DEPLOYER_PRIVATE_KEY from the environment.
-/// @dev Usage:
+/// @notice Deploys GameLeaderboard. The signer is supplied by the forge CLI
+///         (e.g. an encrypted keystore via --account, or --ledger), so no raw
+///         private key is read from the environment.
+/// @dev Usage (encrypted keystore):
 ///        forge script script/Deploy.s.sol:Deploy \
 ///            --rpc-url base \
+///            --account <keystore-name> \
+///            --sender <deployer-address> \
 ///            --broadcast \
 ///            --verify
 contract Deploy is Script {
     function run() external returns (GameLeaderboard board) {
-        uint256 pk = vm.envUint("DEPLOYER_PRIVATE_KEY");
-
-        vm.startBroadcast(pk);
+        vm.startBroadcast();
         board = new GameLeaderboard();
         vm.stopBroadcast();
 

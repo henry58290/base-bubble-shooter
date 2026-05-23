@@ -1,11 +1,4 @@
-import { type Address, getAddress, parseEther } from 'viem';
-
-/**
- * Protocol fee charged per on-chain score submission. Must match
- * `SUBMISSION_FEE` in `contracts/src/GameLeaderboard.sol`.
- */
-export const SUBMISSION_FEE_ETH = '0.000025';
-export const SUBMISSION_FEE_WEI = parseEther(SUBMISSION_FEE_ETH);
+import { type Address, getAddress } from 'viem';
 
 /**
  * Address of the deployed GameLeaderboard contract on Base Mainnet.
@@ -42,7 +35,7 @@ export const LEADERBOARD_ABI = [
   {
     type: 'function',
     name: 'submitScore',
-    stateMutability: 'payable',
+    stateMutability: 'nonpayable',
     inputs: [{ name: 'newScore', type: 'uint256' }],
     outputs: [],
   },
@@ -66,13 +59,6 @@ export const LEADERBOARD_ABI = [
     stateMutability: 'view',
     inputs: [],
     outputs: [{ name: '', type: 'address' }],
-  },
-  {
-    type: 'function',
-    name: 'SUBMISSION_FEE',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ name: '', type: 'uint256' }],
   },
   {
     type: 'function',
@@ -135,22 +121,6 @@ export const LEADERBOARD_ABI = [
     type: 'error',
     name: 'ScoreNotPositive',
     inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'ScoreNotImproved',
-    inputs: [
-      { name: 'previous', type: 'uint256' },
-      { name: 'attempted', type: 'uint256' },
-    ],
-  },
-  {
-    type: 'error',
-    name: 'IncorrectFee',
-    inputs: [
-      { name: 'sent', type: 'uint256' },
-      { name: 'required', type: 'uint256' },
-    ],
   },
   {
     type: 'error',

@@ -7,7 +7,6 @@ import { GameLeaderboard } from "../src/GameLeaderboard.sol";
 contract GameLeaderboardTest is Test {
     GameLeaderboard internal board;
 
-    uint256 internal constant FEE = 0.000025 ether;
     address internal deployer = address(this);
 
     function setUp() public {
@@ -18,85 +17,63 @@ contract GameLeaderboardTest is Test {
 
     function test_RecordsHighScore() public {
         address alice = makeAddr("alice");
-        vm.deal(alice, 1 ether);
         vm.prank(alice);
-        board.submitScore{ value: FEE }(100);
+        board.submitScore(100);
         assertEq(board.getHighScore(alice), 100);
     }
 
     function test_RejectsZeroScore() public {
         address alice = makeAddr("alice");
-        vm.deal(alice, 1 ether);
         vm.prank(alice);
         vm.expectRevert(GameLeaderboard.ScoreNotPositive.selector);
-        board.submitScore{ value: FEE }(0);
+        board.submitScore(0);
     }
 
-    function test_RejectsLowerOrEqualScore() public {
+    function test_NoFeeRequired() public {
+        // Free-to-play: the call must succeed without sending any ETH.
         address alice = makeAddr("alice");
-        vm.deal(alice, 1 ether);
+        vm.prank(alice);
+        board.submitScore(100);
+        assertEq(board.getHighScore(alice), 100);
+        assertEq(address(board).balance, 0);
+    }
+
+    function test_AcceptsLowerOrEqualScore() public {
+        address alice = makeAddr("alice");
 
         vm.prank(alice);
-        board.submitScore{ value: FEE }(100);
+        board.submitScore(100);
 
+        // Resubmitting a lower score is accepted (no revert) but does not lower
+        // the stored high score.
         vm.prank(alice);
-        vm.expectRevert(
-            abi.encodeWithSelector(GameLeaderboard.ScoreNotImproved.selector, 100, 50)
-        );
-        board.submitScore{ value: FEE }(50);
+        board.submitScore(50);
+        assertEq(board.getHighScore(alice), 100);
 
+        // Resubmitting an equal score is likewise accepted.
         vm.prank(alice);
-        vm.expectRevert(
-            abi.encodeWithSelector(GameLeaderboard.ScoreNotImproved.selector, 100, 100)
-        );
-        board.submitScore{ value: FEE }(100);
+        board.submitScore(100);
+        assertEq(board.getHighScore(alice), 100);
+    }
+
+    function test_UnlimitedSubmissions() public {
+        address alice = makeAddr("alice");
+        for (uint256 i; i < 10; ++i) {
+            vm.prank(alice);
+            board.submitScore(42); // same score over and over, all accepted
+        }
+        assertEq(board.getHighScore(alice), 42);
     }
 
     function test_AcceptsHigherScore() public {
         address alice = makeAddr("alice");
-        vm.deal(alice, 1 ether);
 
         vm.prank(alice);
-        board.submitScore{ value: FEE }(100);
-
-        vm.prank(alice);
-        board.submitScore{ value: FEE }(150);
-        assertEq(board.getHighScore(alice), 150);
-    }
-
-    // -- fee enforcement ----------------------------------------------------
-
-    function test_RejectsMissingFee() public {
-        address alice = makeAddr("alice");
-        vm.deal(alice, 1 ether);
-        vm.prank(alice);
-        vm.expectRevert(
-            abi.encodeWithSelector(GameLeaderboard.IncorrectFee.selector, 0, FEE)
-        );
         board.submitScore(100);
-    }
-
-    function test_RejectsWrongFee() public {
-        address alice = makeAddr("alice");
-        vm.deal(alice, 1 ether);
-        vm.prank(alice);
-        vm.expectRevert(
-            abi.encodeWithSelector(GameLeaderboard.IncorrectFee.selector, FEE - 1, FEE)
-        );
-        board.submitScore{ value: FEE - 1 }(100);
 
         vm.prank(alice);
-        vm.expectRevert(
-            abi.encodeWithSelector(GameLeaderboard.IncorrectFee.selector, FEE + 1, FEE)
-        );
-        board.submitScore{ value: FEE + 1 }(100);
-    }
-
-    function test_AccumulatesFees() public {
-        _submit("alice", 100);
-        _submit("bob", 200);
-        _submit("carol", 300);
-        assertEq(address(board).balance, FEE * 3);
+        board.submitScore(150);
+        assertEq(board.getHighScore(alice), 150);
     }
 
     // -- ownership / withdraw ----------------------------------------------
@@ -105,19 +82,7 @@ contract GameLeaderboardTest is Test {
         assertEq(board.owner(), deployer);
     }
 
-    function test_OwnerCanWithdrawFees() public {
-        _submit("alice", 100);
-        _submit("bob", 200);
-
-        uint256 ownerBalBefore = deployer.balance;
-        board.withdrawFees();
-
-        assertEq(address(board).balance, 0);
-        assertEq(deployer.balance, ownerBalBefore + FEE * 2);
-    }
-
     function test_NonOwnerCannotWithdraw() public {
-        _submit("alice", 100);
         address mallory = makeAddr("mallory");
         vm.prank(mallory);
         vm.expectRevert(GameLeaderboard.NotOwner.selector);
@@ -156,17 +121,15 @@ contract GameLeaderboardTest is Test {
     function test_PlayerImprovesRanking() public {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
-        vm.deal(alice, 1 ether);
-        vm.deal(bob, 1 ether);
 
         vm.prank(alice);
-        board.submitScore{ value: FEE }(50);
+        board.submitScore(50);
         vm.prank(bob);
-        board.submitScore{ value: FEE }(100);
+        board.submitScore(100);
 
         // Alice climbs above Bob.
         vm.prank(alice);
-        board.submitScore{ value: FEE }(200);
+        board.submitScore(200);
 
         GameLeaderboard.Entry[] memory top = board.getTopScores();
         assertEq(top[0].player, alice);
@@ -177,13 +140,28 @@ contract GameLeaderboardTest is Test {
         assertEq(top.length, 2);
     }
 
+    function test_LowerResubmitDoesNotDegradeLeaderboard() public {
+        address alice = makeAddr("alice");
+
+        vm.prank(alice);
+        board.submitScore(200);
+
+        // A later, weaker run must not pull the player's leaderboard slot down.
+        vm.prank(alice);
+        board.submitScore(10);
+
+        GameLeaderboard.Entry[] memory top = board.getTopScores();
+        assertEq(top.length, 1);
+        assertEq(top[0].player, alice);
+        assertEq(top[0].score, 200);
+    }
+
     function test_CapsAtHundred() public {
         // Submit 105 distinct players with strictly increasing scores.
         for (uint256 i; i < 105; ++i) {
             address player = address(uint160(0x1000 + i));
-            vm.deal(player, 1 ether);
             vm.prank(player);
-            board.submitScore{ value: FEE }((i + 1) * 10);
+            board.submitScore((i + 1) * 10);
         }
 
         assertEq(board.leaderboardLength(), 100);
@@ -204,15 +182,13 @@ contract GameLeaderboardTest is Test {
         // Fill the board with strong scores.
         for (uint256 i; i < 100; ++i) {
             address player = address(uint160(0x2000 + i));
-            vm.deal(player, 1 ether);
             vm.prank(player);
-            board.submitScore{ value: FEE }(1000 + i);
+            board.submitScore(1000 + i);
         }
 
         address newcomer = makeAddr("newcomer");
-        vm.deal(newcomer, 1 ether);
         vm.prank(newcomer);
-        board.submitScore{ value: FEE }(10); // well below the lowest current score
+        board.submitScore(10); // well below the lowest current score
 
         // Newcomer's high score is recorded, but the leaderboard is unchanged.
         assertEq(board.getHighScore(newcomer), 10);
@@ -228,9 +204,8 @@ contract GameLeaderboardTest is Test {
 
     function _submit(string memory label, uint256 score) internal {
         address player = makeAddr(label);
-        vm.deal(player, 1 ether);
         vm.prank(player);
-        board.submitScore{ value: FEE }(score);
+        board.submitScore(score);
     }
 
     // Required so this test contract can receive ETH on withdraw.

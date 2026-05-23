@@ -15,7 +15,6 @@ import {
   isLeaderboardConfigured,
   LEADERBOARD_ABI,
   LEADERBOARD_ADDRESS,
-  SUBMISSION_FEE_WEI,
 } from '@/lib/contract';
 import { DATA_SUFFIX, SUPPORTED_CHAIN } from '@/lib/wagmi';
 
@@ -86,7 +85,7 @@ export function useSubmitScore(): UseSubmitScoreResult {
   useEffect(() => {
     if (isReverted && !lastFiredRef.current.reverted) {
       lastFiredRef.current.reverted = true;
-      toast.error('Tx reverted — score may not have beat your PB', { id: TOAST_ID });
+      toast.error('Tx reverted — score was not recorded', { id: TOAST_ID });
     }
   }, [isReverted]);
 
@@ -133,7 +132,6 @@ export function useSubmitScore(): UseSubmitScoreResult {
           abi: LEADERBOARD_ABI,
           functionName: 'submitScore',
           args: [BigInt(score)],
-          value: SUBMISSION_FEE_WEI,
           dataSuffix: DATA_SUFFIX,
         });
         // After the wallet signs we know the tx was broadcast.
@@ -183,17 +181,11 @@ function friendlyErrorMessage(err: unknown): string {
   if (msg.includes('user rejected') || msg.includes('user denied')) {
     return 'Transaction rejected in wallet';
   }
-  if (msg.includes('scorenotimproved')) {
-    return 'Score must beat your previous best';
-  }
   if (msg.includes('scorenotpositive')) {
     return 'Score must be greater than zero';
   }
-  if (msg.includes('incorrectfee')) {
-    return 'App updated — please hard-refresh (Ctrl+Shift+R) and submit again';
-  }
   if (msg.includes('insufficient funds')) {
-    return 'Insufficient ETH on Base for fee + gas';
+    return 'Insufficient ETH on Base for gas';
   }
   if (e.cause?.reason) return e.cause.reason;
   return e.shortMessage ?? e.message ?? 'Transaction failed';

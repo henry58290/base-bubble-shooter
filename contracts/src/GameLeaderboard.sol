@@ -3,19 +3,17 @@ pragma solidity ^0.8.24;
 
 /// @title GameLeaderboard
 /// @notice Stores per-player high scores and a globally-sorted top-N leaderboard.
-/// @dev Designed for the Neon Pop arcade game. Optimised for the common case where
-///      most submissions either don't beat the player's previous high score (revert
-///      cheaply) or only need to update an existing leaderboard slot.
+/// @dev Designed for the Neon Pop arcade game. Free-to-play: `submitScore` takes
+///      no fee and accepts every submission. A submission only mutates the
+///      leaderboard when it beats the player's stored high score.
 ///
-///      v2: every `submitScore` carries a fixed protocol fee in ETH. The deployer
-///      becomes the contract owner and can withdraw accumulated fees.
+///      v3: free-to-play. The fee that earlier versions charged per submission has
+///      been removed entirely; submissions are unlimited and no longer restricted
+///      to scores that improve on a player's previous best.
 contract GameLeaderboard {
     /// @dev Fixed cap on the global leaderboard size. Bounded so on-chain
     ///      sort/insert remains gas-stable.
     uint256 public constant LEADERBOARD_SIZE = 100;
-
-    /// @notice Required ETH amount that must accompany every `submitScore` call.
-    uint256 public constant SUBMISSION_FEE = 0.000025 ether;
 
     struct Entry {
         address player;
@@ -45,8 +43,6 @@ contract GameLeaderboard {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     error ScoreNotPositive();
-    error ScoreNotImproved(uint256 previous, uint256 attempted);
-    error IncorrectFee(uint256 sent, uint256 required);
     error NotOwner();
     error ZeroAddress();
     error WithdrawFailed();
@@ -61,20 +57,23 @@ contract GameLeaderboard {
         emit OwnershipTransferred(address(0), msg.sender);
     }
 
-    /// @notice Submit a new score. Caller must send exactly `SUBMISSION_FEE` and
-    ///         the new score must strictly beat their stored high score.
-    /// @param newScore The candidate score (must be > 0 and > caller's stored high).
-    function submitScore(uint256 newScore) external payable {
-        if (msg.value != SUBMISSION_FEE) revert IncorrectFee(msg.value, SUBMISSION_FEE);
+    /// @notice Submit a score. Free to call and unlimited — every submission is
+    ///         accepted, even one that's lower than a previous attempt. A submission
+    ///         only updates the player's stored high score and the global
+    ///         leaderboard when it beats their current best.
+    /// @param newScore The candidate score (must be > 0).
+    function submitScore(uint256 newScore) external {
         if (newScore == 0) revert ScoreNotPositive();
 
         uint256 previous = highScore[msg.sender];
-        if (newScore <= previous) revert ScoreNotImproved(previous, newScore);
+        bool newHighScore = newScore > previous;
 
-        highScore[msg.sender] = newScore;
-        _updateLeaderboard(msg.sender, newScore);
+        if (newHighScore) {
+            highScore[msg.sender] = newScore;
+            _updateLeaderboard(msg.sender, newScore);
+        }
 
-        emit ScoreSubmitted(msg.sender, newScore, true);
+        emit ScoreSubmitted(msg.sender, newScore, newHighScore);
     }
 
     /// @notice Read the current top leaderboard. Length is between 0 and LEADERBOARD_SIZE.
